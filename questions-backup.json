@@ -13,16 +13,6 @@
         "id": "d498c0a3-5be2-4354-a3bc-78673aca0f31",
         "author": "Dr Strange",
         "summary": "It is egg-shaped."
-      },
-      {
-        "id": "d498c0a3-5be2-4354-a3bc-78673acadg45",
-        "author": "Janusz",
-        "summary": "It is flat as hell."
-      },
-      {
-        "id": "d498c0a3-5be2-4354-a3bc-78673acadg45",
-        "author": "Janusz",
-        "summary": "It is flat as hell."
       }
     ]
   },
@@ -48,23 +38,5 @@
         "summary": "Feed the people with cary and hope!"
       }
     ]
-  },
-  {
-    "id": "",
-    "author": "uuid",
-    "summary": "uuid test",
-    "answers": []
-  },
-  {
-    "id": "48ce9d71-904c-4932-94dd-2a49bf0ab5cf",
-    "author": "uuid",
-    "summary": "uuid test",
-    "answers": []
-  },
-  {
-    "id": "55500eb6-b1cb-451a-a249-a64d7cc4f795",
-    "author": "TEST ADD",
-    "summary": "TEST ADD",
-    "answers": []
   }
 ]

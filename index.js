@@ -19,38 +19,37 @@ app.get('/', (_, res) => {
 
 app.get('/questions', async (req, res) => {
   const questions = await req.repositories.questionRepo.getQuestions()
-  res.json(questions)
+  await res.status(200).json(questions)
 })
-
 
 app.get('/questions/:questionId', async (req, res) => {
   const questionById = await req.repositories.questionRepo.getQuestionById(req.params.questionId)
-  res.json(questionById)
+  await res.status(200).json(questionById)
 })
 
 app.post('/questions', async (req, res) => {
-  const addQuestion = await req.repositories.questionRepo.addQuestion(req.body)
-  res.status(200).send('Question added successfully')
+  await req.repositories.questionRepo.addQuestion(req.body)
+  await res.status(200).send('Question added successfully')
 })
 
 app.get('/questions/:questionId/answers', async (req, res) => {
   const AnswersByQuestionId = await req.repositories.questionRepo.getAnswers(req.params.questionId)
-  res.json(AnswersByQuestionId)
+  await res.status(200).json(AnswersByQuestionId)
+})
+
+app.get('/questions/:questionId/answers/:answerId', async (req, res) => {
+  const AnswersByQuestionIdAndAnswerId = await req.repositories.questionRepo.getAnswer(req.params.questionId, req.params.answerId)
+  await res.status(200).json(AnswersByQuestionIdAndAnswerId)
 })
 
 
+app.post('/questions/:questionId/answers', async (req, res) => {
+  const newAnswer =await req.body
+  const addAnswerByIdQuestion = await req.repositories.questionRepo.addAnswer(req.params.questionId, newAnswer)
+  await res.status(200).send('Answer added successfully')
 
-
-
-
-
-
-app.post('/questions/:questionId/answers', (req, res) => {
-  // const addAnswerByIdQuestion = await req.repositories.questionRepo.addAnswer()
 })
 
-app.get('/questions/:questionId/answers/:answerId', (req, res) => {
-})
 
 app.listen(PORT, () => {
   console.log(`Responder app listening on port ${PORT}`)
