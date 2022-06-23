@@ -7,13 +7,13 @@ describe('question repository', () => {
   const TEST_QUESTIONS_FILE_PATH = 'test-questions.json'
   let questionRepo
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify([]))
 
     questionRepo = makeQuestionRepository(TEST_QUESTIONS_FILE_PATH)
   })
 
-  afterAll(async () => {
+  afterEach(async () => {
     await rm(TEST_QUESTIONS_FILE_PATH)
   })
 
@@ -36,13 +36,11 @@ describe('question repository', () => {
         answers: []
       }
     ]
-
     await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testQuestions))
-
     expect(await questionRepo.getQuestions()).toHaveLength(2)
   })
 
-  test('should return question with provided id ', async () => {
+  test('getQuestionById should return question with provided id ', async () => {
     const testQuestions = [
       {
         'id': '50f9e662-fa0e-4ec7-b53b-7845e8f821c3',
@@ -104,9 +102,160 @@ describe('question repository', () => {
     ]
     await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testQuestions))
     const testQuery = await questionRepo.getQuestionById('00f3dd43-ae53-4430-8da1-b722e034c73d')
-    // console.log(typeof testQuery.id)
+    expect(await (testQuery)).toBeDefined()
+    expect(await (testQuery)).toEqual({
+      'id': '00f3dd43-ae53-4430-8da1-b722e034c73d',
+      'author': 'Sarah Nickle',
+      'summary': 'Who let the dogs out?',
+      'answers': []
+    })
     expect(await (testQuery.id)).toEqual('00f3dd43-ae53-4430-8da1-b722e034c73d')
+  })
 
+  test('getQuestionById should return message if UUID is not valid', async () => {
+    expect(await questionRepo.getQuestionById('Dinozaur')).toEqual('Its not valid UUID')
+  })
+
+  test('addQuestion should add new question to the list', async () => {
+
+    let newTestQuestion = {
+      'id': faker.datatype.uuid(),
+      'author': 'Test',
+      'summary': 'Test Summary',
+      'answers': []
+    }
+    expect(await questionRepo.addQuestion(newTestQuestion)).toHaveLength(1)
+    expect(await questionRepo.addQuestion(newTestQuestion)).toBeDefined()
+  })
+
+  test('getAnswers should get answers by questionId', async () => {
+
+    const testQuestions = [
+      {
+        'id': '50f9e662-fa0e-4ec7-b53b-7845e8f821c3',
+        'author': 'John Stockton',
+        'summary': 'What is the shape of the Earth?',
+        'answers': [
+          {
+            'id': 'ce7bddfb-0544-4b14-92d8-188b03c41ee4',
+            'author': 'Brian McKenzie',
+            'summary': 'The Earth is flat.'
+          },
+          {
+            'id': 'd498c0a3-5be2-4354-a3bc-78673aca0f31',
+            'author': 'Dr Strange',
+            'summary': 'It is egg-shaped.'
+          },
+          {
+            'id': 'd498c0a3-5be2-4354-a3bc-78673acadg45',
+            'author': 'Janusz',
+            'summary': 'It is flat as hell.'
+          }
+        ]
+      }
+    ]
+    await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testQuestions))
+    const expectation = await questionRepo.getAnswers('50f9e662-fa0e-4ec7-b53b-7845e8f821c3')
+    const expectedAnswers = [{
+      'id': 'ce7bddfb-0544-4b14-92d8-188b03c41ee4',
+      'author': 'Brian McKenzie',
+      'summary': 'The Earth is flat.'
+    },
+      {
+        'id': 'd498c0a3-5be2-4354-a3bc-78673aca0f31',
+        'author': 'Dr Strange',
+        'summary': 'It is egg-shaped.'
+      },
+      {
+        'id': 'd498c0a3-5be2-4354-a3bc-78673acadg45',
+        'author': 'Janusz',
+        'summary': 'It is flat as hell.'
+      }]
+
+    expect(expectation).toHaveLength(3)
+    expect(expectation).toEqual(expectedAnswers)
 
   })
+
+  test('getAnswers should return message if UUID is not valid', async () => {
+    expect(await questionRepo.getAnswers('Tyranozaur')).toEqual('Its not valid UUID')
+  })
+
+  test('getAnswer should get specific answer by questionId and answerId', async () => {
+
+    const testQuestions = [
+      {
+        'id': '50f9e662-fa0e-4ec7-b53b-7845e8f821c3',
+        'author': 'John Stockton',
+        'summary': 'What is the shape of the Earth?',
+        'answers': [
+          {
+            'id': 'ce7bddfb-0544-4b14-92d8-188b03c41ee4',
+            'author': 'Brian McKenzie',
+            'summary': 'The Earth is flat.'
+          },
+          {
+            'id': 'd498c0a3-5be2-4354-a3bc-78673aca0f31',
+            'author': 'Dr Strange',
+            'summary': 'It is egg-shaped.'
+          },
+          {
+            'id': 'd498c0a3-5be2-4354-a3bc-78673acadg45',
+            'author': 'Janusz',
+            'summary': 'It is flat as hell.'
+          }
+        ]
+      }
+    ]
+    await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testQuestions))
+    const expectation = await questionRepo.getAnswer('50f9e662-fa0e-4ec7-b53b-7845e8f821c3', 'd498c0a3-5be2-4354-a3bc-78673aca0f31')
+    const expectedAnswers = {
+      'id': 'd498c0a3-5be2-4354-a3bc-78673aca0f31',
+      'author': 'Dr Strange',
+      'summary': 'It is egg-shaped.'
+    }
+    expect(expectation).toHaveLength(1)
+    expect(expectation[0]).toEqual(expectedAnswers)
+  })
+
+  test('getAnswer should return message if UUID is not valid', async () => {
+
+    expect(await questionRepo.getAnswer('50f9e662-fa0e-4ec7-b53b-7845e8f821c3', 'Charmander')).toEqual('Its not valid UUID')
+    expect(await questionRepo.getAnswer('Pikachu', 'd498c0a3')).toEqual('Its not valid UUID')
+    expect(await questionRepo.getAnswer('Pikachu', 'Charmander')).toEqual('Its not valid UUID')
+  })
+
+  test('addAnswer should add one answer to specific questionId', async () => {
+
+    const testQuestions = [
+      {
+        'id': '50f9e662-fa0e-4ec7-b53b-7845e8f821c3',
+        'author': 'John Stockton',
+        'summary': 'What is the shape of the Earth?',
+        'answers': []
+      }
+    ]
+
+    let newTestAnswer = {
+      'id': faker.datatype.uuid(),
+      'author': 'Test Answer',
+      'summary': 'Test Summary Answer'
+    }
+    await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testQuestions))
+    const expectation = await questionRepo.addAnswer('50f9e662-fa0e-4ec7-b53b-7845e8f821c3', newTestAnswer)
+    expect(expectation).toHaveLength(1)
+  })
+
+  test('addAnswer should return message if UUID is not valid', async () => {
+    let newTestAnswer = {
+      'id': faker.datatype.uuid(),
+      'author': 'Test Answer',
+      'summary': 'Test Summary Answer'
+    }
+
+
+    expect(await questionRepo.addAnswer('Tyranozaur',newTestAnswer)).toEqual('Its not valid UUID')
+  })
+
 })
+

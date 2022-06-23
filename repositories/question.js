@@ -29,7 +29,7 @@ const makeQuestionRepository = fileName => {
       const questions = await loadQuestions()
       return questions.find(question => question.id === questionId)
     } else {
-      throw new Error('Its not valid UUID')
+      return 'Its not valid UUID'
     }
   }
 
@@ -40,7 +40,7 @@ const makeQuestionRepository = fileName => {
     await writeFile(fileName, JSON.stringify(questions), err => {
       if (err) throw err
     })
-    console.log(`Done writing, the question below has been added to the repository: \n ${question}`)
+    return questions
   }
   const getAnswers = async questionId => {
     if (uuidValidator(questionId)) {
@@ -48,21 +48,21 @@ const makeQuestionRepository = fileName => {
       const questionById = await questions.find(question => question.id === questionId)
       return await questionById.answers
     } else {
-      return new Error('Its not valid UUID')
+      return 'Its not valid UUID'
     }
   }
   const getAnswer = async (questionId, answerId) => {
-    if (uuidValidator(questionId) || uuidValidator(answerId)) {
+    if (uuidValidator(questionId) && uuidValidator(answerId)) {
       const questions = await loadQuestions()
       const questionById = await questions.find(question => question.id === questionId)
       return questionById.answers.filter(answer => answer.id === answerId)
     } else {
-      return new Error('Its not valid UUID')
+      return 'Its not valid UUID'
     }
   }
 
   const addAnswer = async (questionId, answer) => {
-    if (uuidValidator(questionId) ) {
+    if (uuidValidator(questionId)) {
       const answerWithUUID = uuidCreator(answer)
       const questions = await loadQuestions()
       const questionById = await questions.filter(question => question.id === questionId)
@@ -71,8 +71,9 @@ const makeQuestionRepository = fileName => {
       await writeFile(fileName, JSON.stringify(questions), err => {
         if (err) throw err
       })
+      return questions[0].answers
     } else {
-      return new Error('Its not valid UUID')
+      return 'Its not valid UUID'
     }
   }
 

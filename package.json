@@ -13,7 +13,8 @@
   "devDependencies": {
     "@faker-js/faker": "^7.1.0",
     "jest": "^28.1.0",
-    "nodemon": "^2.0.16"
+    "nodemon": "^2.0.16",
+    "supertest": "^6.2.3"
   },
   "dependencies": {
     "body-parser": "^1.20.0",
@@ -21,11 +22,15 @@
     "uuid": "^8.3.2"
   },
   "jest": {
-    "collectCoverage": false,
-    "collectCoverageFrom": ["./*/*.js"],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "./repositories/*.js",
+      "./index.js"
+    ],
     "coverageThreshold": {
       "global": {
-        "lines": 90}
+        "lines": 90
+      }
     }
   }
 }
